@@ -12,9 +12,9 @@ UPLOAD_DIR = Path("./audios")
 
 
 @app.post("/text")
-async def text_req(req : str):
-    response = get_ai_response(req)
-    return response
+async def text_req(request: str):
+    response = get_ai_response(request)
+    return {"request": request, "response": response}
 
 
 @app.post("/audio")
@@ -33,5 +33,5 @@ async def upload_audio(file: UploadFile = File(...)):
         await f.write(await file.read())
 
     request = get_text_from_audio(file.filename)
-
-    return 
+    response = get_ai_response(request)
+    return {"request": request, "response": response}
