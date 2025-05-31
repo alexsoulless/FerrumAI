@@ -5,7 +5,6 @@ import os
 
 model = Model("vosk-model-small-ru-0.22")  # Скачайте модель с сайта Vosk
 
-
 def get_text_from_audio(wavfilename: str) -> str:
     """
     Извлекает текст из аудиофайла (формат: 16kHz, моно, WAV).
@@ -14,7 +13,13 @@ def get_text_from_audio(wavfilename: str) -> str:
     if not os.path.exists(wavfilename):
         raise FileNotFoundError(f"Файл {wavfilename} не найден")
 
-    with wave.open(wavfilename, "rb") as wf:
+    # Нормализация и приведение к 16kHz, 1 канал
+    audio = AudioSegment.from_wav(wavfilename)
+    audio = audio.set_frame_rate(16000).set_channels(1).normalize()
+    normalized_path = wavfilename.replace(".wav", "_normalized.wav")
+    audio.export(normalized_path, format="wav")
+
+    with wave.open(normalized_path, "rb") as wf:
         if wf.getnchannels() != 1 or wf.getsampwidth() != 2:
             raise ValueError("Требуется WAV-файл с моно-звуком (16-bit PCM)")
 
@@ -44,4 +49,5 @@ def get_text_from_audio(wavfilename: str) -> str:
     return " ".join(full_text).strip()
 
 
-# get_text_from_audio("./audios/1.wav")
+if __name__ == "__main__":
+    print(get_text_from_audio("./audios/audio_2025-05-31_21-34-51.wav"))
