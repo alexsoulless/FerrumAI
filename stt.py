@@ -45,4 +45,4 @@ def get_text_from_audio(wavfilename: str) -> str:
 
 
 if __name__ == "__main__":
-    print(get_text_from_audio("./audios/audio_2025-05-31_19-23-12.wav"))
+        (get_text_from_audio("./audios/audio_2025-05-31_19-23-12.wav"))
