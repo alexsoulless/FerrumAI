@@ -20,7 +20,7 @@ async def text_req(request : str):
     }
 
 
-@app.get("/audio")
+@app.post("/audio")
 async def upload_audio(file: UploadFile = File(...)):
     UPLOAD_DIR.mkdir(exist_ok=True)
 
