@@ -8,7 +8,8 @@ from langchain_core.tools import BaseTool, tool
 from langchain_gigachat.chat_models import GigaChat
 from langgraph.prebuilt import create_react_agent
 from langgraph.checkpoint.memory import InMemorySaver
-from paths import PATH
+from paths import PATHS
+from devices import DEVICES
 from model_configs import (
     MANAGER_AI_PROMPT,
     INTERFACE_AI_PROMPT,
@@ -22,7 +23,6 @@ model = GigaChat(
 )
 
 load_dotenv(find_dotenv())
-REQUISITES_FILE = "paths.docx"
 
 
 class LLMAgent:
@@ -63,15 +63,17 @@ def process_with_intarfaceAI(prompt: str):
     Если возникает ошибка — возвращает её описание.
     """
     try:
-        print(f"Вызван помощник интерфейса с промптом: {prompt}")
-        interface_agent = InterfaceAgent(model)  # теперь model передаётся правильно
+        print(f"process_with_intarfaceAI({prompt})")
+        interface_agent = InterfaceAgent()
         agent_response = interface_agent.invoke(prompt)
-        
+
         if not agent_response:
-            return "Ошибка: агент не вернул ответ (возможно, проблема в tools или промпте)"
-        
+            return (
+                "Ошибка: агент не вернул ответ (возможно, проблема в tools или промпте)"
+            )
+
         return agent_response
-    
+
     except Exception as e:
         return f"Ошибка в process_with_interfaceAI: {str(e)}"
 
@@ -87,19 +89,20 @@ def process_with_smarthomeAI(prompt: str) -> str:
     Returns:
         str: результат обработки запроса
     """
-    return f"Запрос обработан с помощью smarthomeAI\nprompt:{prompt}"
+    try:
+        print(f"process_with_smarthomeAI({prompt})")
+        smhome_agent = SmartHomeAgent()
+        agent_response = smhome_agent.invoke(prompt)
 
-@tool
-def get_paths(description: str) -> dict:
-    """
-    Получаем все пути всех разделов приложения с описанием.
-    Args:
-        description (str): описание раздела
+        if not agent_response:
+            return (
+                "Ошибка: агент не вернул ответ (возможно, проблема в tools или промпте)"
+            )
 
-    Returns:
-        paths: словарь с путями 'путь' ->  'описание'"
-    """
-    return PATH
+        return agent_response
+
+    except Exception as e:
+        return f"Ошибка в process_with_interfaceAI: {str(e)}"
 
 
 class ManagerAgent(LLMAgent):
@@ -111,11 +114,60 @@ class ManagerAgent(LLMAgent):
             prompt=MANAGER_AI_PROMPT,
         )
 
-class InterfaceAgent(LLMAgent):  # <- исправлено имя (без "e")
-    def __init__(self, model):  # <- добавлен model как аргумент
+
+@tool
+def get_paths() -> dict:
+    """
+    Получаем все пути всех разделов приложения с описанием.
+
+    Returns:
+        paths: словарь с путями разделов 'путь' ->  'описание'"
+    """
+    print("get_paths")
+    return PATHS
+
+
+class InterfaceAgent(LLMAgent):
+    def __init__(self):
         super().__init__(
             model,
-            tools=[get_paths],  # убедитесь, что get_paths работает корректно
+            tools=[get_paths],
             prompt=INTERFACE_AI_PROMPT,
         )
 
+
+@tool
+def get_devices() -> dict:
+    """
+    Получаем доступные устройства в умном доме
+
+    Returns:
+        devices: словарь с описанием устройств умного дома в формате
+        {"имя устройства": {"функция1" : "путь1", "функция2" : "путь2"}}
+    """
+    print("get_devices")
+    return DEVICES
+
+
+@tool
+def perform_device_func(path) -> int:
+    """
+    Вызов функции устройства умного дома
+
+    Args:
+        path (str): путь к функции
+
+    Returns:
+        int: код ошибки; 0 - успешно, 1 - неудачно
+    """
+    print(f"Вызвана функция устройства умного дома {path}")
+    return 0
+
+
+class SmartHomeAgent(LLMAgent):
+    def __init__(self):
+        super().__init__(
+            model,
+            tools=[get_devices, perform_device_func],
+            prompt=SMARTHOME_AI_PROMPT,
+        )
