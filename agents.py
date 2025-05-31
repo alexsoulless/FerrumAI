@@ -127,13 +127,8 @@ def process_with_intarfaceAI(prompt: str):
 @tool
 def process_with_smarthomeAI(prompt: str) -> str:
     """
-    Обработка запроса умномым домом
-
-    Args:
-        prompt (str): оптимизированный промпт
-
-    Returns:
-        str: результат обработки запроса
+    Обрабатывает запрос через smarthomeAI и возвращает ответ.
+    Если возникает ошибка — возвращает её описание.
     """
     try:
         print(f"process_with_smarthomeAI({prompt})")
@@ -185,11 +180,11 @@ class InterfaceAgent(LLMAgent):
 @tool
 def get_devices() -> dict:
     """
-    Получаем доступные устройства в умном доме
+    Получаем доступные устройства в умном доме и пути для вызова их функций
 
     Returns:
         devices: словарь с описанием устройств умного дома в формате
-        {"имя устройства": {"функция1" : "путь1", "функция2" : "путь2"}}
+        {"путь": "описание",...}
     """
     print("get_devices")
     return DEVICES
