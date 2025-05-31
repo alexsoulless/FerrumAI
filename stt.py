@@ -43,4 +43,5 @@ def get_text_from_audio(wavfilename: str) -> str:
 
     return " ".join(full_text).strip()
 
+
 # get_text_from_audio("./audios/1.wav")
