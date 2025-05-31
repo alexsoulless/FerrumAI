@@ -1,20 +1,21 @@
-from agents import ManagerAgent, InterfaceAgent
+from fastapi import FastAPI, Request
+from pydantic import BaseModel
 
+app = FastAPI()
 
-def print_agent_response(llm_response: str) -> None:
-    print(f"\033[35m{llm_response}\033[0m")
+class QueryRequest(BaseModel):
+    prompt: str
 
+class QueryResponse(BaseModel):
+    response: str
 
-def get_user_prompt() -> str:
-    return input("\nТы: ")
+@app.post("/query", response_model=QueryResponse)
+async def query_endpoint(request: QueryRequest):
+    # Здесь будет логика обращения к агенту
+    # Например: response = manager_agent.invoke(request.prompt)
+    response = "Заглушка ответа"
+    return QueryResponse(response=response)
 
-
-def start_chat(manager_agent):
-    while True:
-        agent_response = manager_agent.invoke(get_user_prompt())
-        print_agent_response(f"{manager_agent.__repr__()}:{agent_response}")
-
-
-if __name__ == "__main__":
-    manager_agent = ManagerAgent()
-    start_chat(manager_agent)
+@app.get("/")
+async def root():
+    return {"message": "API сервер запущен"}
