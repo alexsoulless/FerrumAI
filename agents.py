@@ -1,4 +1,3 @@
-# from dataclasses import dataclass, asdict
 from typing import Sequence
 import uuid
 
@@ -9,13 +8,13 @@ from langchain_core.tools import BaseTool, tool
 from langchain_gigachat.chat_models import GigaChat
 from langgraph.prebuilt import create_react_agent
 from langgraph.checkpoint.memory import InMemorySaver
+from paths import PATH
 from model_configs import (
     MANAGER_AI_PROMPT,
     INTERFACE_AI_PROMPT,
     SMARTHOME_AI_PROMPT,
     AI_MODEL,
 )
-from paths import PATH
 
 model = GigaChat(
     model=AI_MODEL,
@@ -23,6 +22,7 @@ model = GigaChat(
 )
 
 load_dotenv(find_dotenv())
+REQUISITES_FILE = "paths.docx"
 
 
 class LLMAgent:
@@ -55,22 +55,6 @@ class LLMAgent:
             {"messages": [message], "temperature": temperature}, config=self._config
         )["messages"][-1].content
 
-
-# @tool
-# def process_with_intarfaceAI(prompt: str) -> str:
-#     """
-#     Обрабатка запроса помощником по интерфейсу
-
-#     Args:
-#         prompt (str): оптимизированный промпт
-
-#     Returns:
-#         agent_response: результат обработки запроса
-#     """
-#     print(f"вызван помощник интерфейса с промптом:{prompt}")
-#     interface_agent = InterfaceAgent(model)
-#     agent_response = interface_agent.invoke(prompt)
-#     return agent_response
 
 @tool
 def process_with_intarfaceAI(prompt: str):
@@ -105,7 +89,6 @@ def process_with_smarthomeAI(prompt: str) -> str:
     """
     return f"Запрос обработан с помощью smarthomeAI\nprompt:{prompt}"
 
-
 @tool
 def get_paths(description: str) -> dict:
     """
@@ -116,7 +99,6 @@ def get_paths(description: str) -> dict:
     Returns:
         paths: словарь с путями 'путь' ->  'описание'"
     """
-
     return PATH
 
 
