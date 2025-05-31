@@ -12,5 +12,5 @@ DEVICES = {
     "лампочка гостинная": ["/room1/lamp/on", "/room1/lamp/off"],
     "чайник кухня": ["/kitchen/teapod/boil_water"],
     "датчик температуры гостинная": ["измерить температуру", "/room1/temp_sensor/get"],
-    "лампочка ванная": ["/room2/lamp/on", "/room2/lamp/on"],
+    "лампочка ванная": ["/room2/lamp/on", "/room2/lamp/off"],
 }
