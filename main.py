@@ -1,21 +1,32 @@
-from fastapi import FastAPI, Request
-from pydantic import BaseModel
+from fastapi import FastAPI, UploadFile, File, HTTPException
+import aiofiles
+import os
+from pathlib import Path
+import uuid
 
 app = FastAPI()
 
-class QueryRequest(BaseModel):
-    prompt: str
+UPLOAD_DIR = Path("./audios")
 
-class QueryResponse(BaseModel):
-    response: str
 
-@app.post("/query", response_model=QueryResponse)
-async def query_endpoint(request: QueryRequest):
-    # Здесь будет логика обращения к агенту
-    # Например: response = manager_agent.invoke(request.prompt)
-    response = "Заглушка ответа"
-    return QueryResponse(response=response)
+@app.post("/text")
+async def text_req(str):
+    pass
 
-@app.get("/")
-async def root():
-    return {"message": "API сервер запущен"}
+
+@app.post("/audio")
+async def upload_audio(file: UploadFile = File(...)):
+    UPLOAD_DIR.mkdir(exist_ok=True)
+
+    if not file.filename is None:
+        _, file_ext = os.path.splitext(file.filename)
+    else:
+        raise HTTPException(status_code=400, detail="bad file")
+    safe_filename = f"{uuid.uuid4()}{file_ext}"
+
+    file_path = UPLOAD_DIR / safe_filename
+
+    async with aiofiles.open(file_path, "wb") as f:
+        await f.write(await file.read())
+
+    return {"path": str(file_path)}

@@ -4,6 +4,7 @@ __pycache__/
 build/
 dist/
 wheels/
+audios
 *.egg-info
 
 # Virtual environments
@@ -19,3 +20,4 @@ attachments
 
 *:Zone.Identifier
 vosk*
+tmp*
