@@ -11,13 +11,16 @@ app = FastAPI()
 UPLOAD_DIR = Path("./audios")
 
 
-@app.post("/text")
-async def text_req(request: str):
+@app.get("/text")
+async def text_req(request : str):
     response = get_ai_response(request)
-    return {"request": request, "response": response}
+    return {
+        "request" : request,
+        "response" : response
+    }
 
 
-@app.post("/audio")
+@app.get("/audio")
 async def upload_audio(file: UploadFile = File(...)):
     UPLOAD_DIR.mkdir(exist_ok=True)
 
@@ -32,6 +35,9 @@ async def upload_audio(file: UploadFile = File(...)):
     async with aiofiles.open(file_path, "wb") as f:
         await f.write(await file.read())
 
-    request = get_text_from_audio(file.filename)
+    request = get_text_from_audio(file_path.__str__())
     response = get_ai_response(request)
-    return {"request": request, "response": response}
+    return {
+        "request" : request,
+        "response" : response
+    }
