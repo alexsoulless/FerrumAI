@@ -88,6 +88,7 @@ def process_with_smarthomeAI(prompt: str) -> str:
         print(f"process_with_smarthomeAI({prompt})")
         smhome_agent = SmartHomeAgent()
         agent_response = smhome_agent.invoke(prompt)
+        print(f"agent_response: {agent_response}")
 
         if not agent_response:
             return (
@@ -97,6 +98,7 @@ def process_with_smarthomeAI(prompt: str) -> str:
         return agent_response
 
     except Exception as e:
+        # print(f"Ошибка в process_with_smarthomeAI: {str(e)}")
         return f"Ошибка в process_with_smarthomeAI: {str(e)}"
 
 
@@ -145,7 +147,7 @@ def get_devices() -> dict:
 
 
 @tool
-def perform_device_func(path) -> int:
+def perform_device_func(path: str) -> int:
     """
     Вызов функции устройства умного дома
 
