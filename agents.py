@@ -98,7 +98,6 @@ class LLMAgent:
             return response_content
 
         except Exception as e:
-            print(f"[CRITICAL ERROR] Invoke failed: {str(e)}", exc_info=True)
         return f"Ошибка выполнения запроса: {str(e)}"
 
 
