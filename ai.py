@@ -1,4 +1,4 @@
-from agents import ManagerAgent, InterfaceAgent
+from agents import ManagerAgent, InterfaceAgent, SmartHomeAgent
 
 manager_agent = ManagerAgent()
 

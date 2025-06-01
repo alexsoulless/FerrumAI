@@ -39,21 +39,67 @@ class LLMAgent:
         file_uploaded_id = self._model.upload_file(file).id_  # type: ignore
         return file_uploaded_id
 
+    # def invoke(
+    #     self,
+    #     content: str,
+    #     attachments: list[str] | None = None,
+    #     temperature: float = 0.1,
+    # ) -> str:
+    #     """Отправляет сообщение в чат"""
+    #     message: dict = {
+    #         "role": "user",
+    #         "content": content,
+    #         **({"attachments": attachments} if attachments else {}),
+    #     }
+    #     return self._agent.invoke(
+    #         {"messages": [message], "temperature": temperature}, config=self._config
+    #     )["messages"][-1].content
     def invoke(
-        self,
-        content: str,
-        attachments: list[str] | None = None,
-        temperature: float = 0.1,
-    ) -> str:
-        """Отправляет сообщение в чат"""
-        message: dict = {
-            "role": "user",
-            "content": content,
-            **({"attachments": attachments} if attachments else {}),
-        }
-        return self._agent.invoke(
-            {"messages": [message], "temperature": temperature}, config=self._config
-        )["messages"][-1].content
+    self,
+    content: str,
+    attachments: list[str] | None = None,
+    temperature: float = 0.1,
+) -> str:
+        """Отправляет сообщение в чат с подробным логированием"""
+        print(f"\n=== INVOKE START ===")
+        print(f"[INPUT] Content: {content}")
+        print(f"[INPUT] Attachments: {attachments}")
+        print(f"[INPUT] Temperature: {temperature}")
+
+        try:
+            # Формируем сообщение
+            message: dict = {
+                "role": "user",
+                "content": content,
+                **({"attachments": attachments} if attachments else {}),
+            }
+            print(f"[DEBUG] Formed message: {message}")
+
+            # Подготовка аргументов для агента
+            agent_args = {
+                "messages": [message],
+                "temperature": temperature
+            }
+            print(f"[DEBUG] Agent args: {agent_args}")
+
+            # Вызов агента
+            print("[ACTION] Calling agent...")
+            raw_response = self._agent.invoke(agent_args, config=self._config)
+            print(f"[DEBUG] Raw agent response: {raw_response}")
+
+            # Извлечение контента
+            if not raw_response or "messages" not in raw_response:
+                print("[ERROR] Invalid agent response structure")
+                return "Ошибка: некорректный ответ от агента"
+
+            response_content = raw_response["messages"][-1].content
+            print(f"[SUCCESS] Response content: {response_content}")
+            print("=== INVOKE END ===\n")
+            return response_content
+
+        except Exception as e:
+            print(f"[CRITICAL ERROR] Invoke failed: {str(e)}", exc_info=True)
+        return f"Ошибка выполнения запроса: {str(e)}"
 
 
 @tool
@@ -161,8 +207,16 @@ def perform_device_func(path: str) -> int:
     return 0
 
 
+# class SmartHomeAgent(LLMAgent):
+#     def __init__(self):
+#         super().__init__(
+#             model,
+#             tools=[get_devices, perform_device_func],
+#             prompt=SMARTHOME_AI_PROMPT,
+#         )
+
 class SmartHomeAgent(LLMAgent):
-    def __init__(self):
+    def __init__(self):  # Добавляем model как обязательный параметр
         super().__init__(
             model,
             tools=[get_devices, perform_device_func],
