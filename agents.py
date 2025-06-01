@@ -54,20 +54,6 @@ class LLMAgent:
         return self._agent.invoke(
             {"messages": [message], "temperature": temperature}, config=self._config
         )["messages"][-1].content
-        self,
-        content: str,
-        attachments: list[str] | None = None,
-        temperature: float = 0.1,
-    ) -> str:
-        """Отправляет сообщение в чат"""
-        message: dict = {
-            "role": "user",
-            "content": content,
-            **({"attachments": attachments} if attachments else {}),
-        }
-        return self._agent.invoke(
-            {"messages": [message], "temperature": temperature}, config=self._config
-        )["messages"][-1].content
 
 
 @tool
@@ -99,7 +85,7 @@ def process_with_smarthomeAI(prompt: str) -> str:
     Если возникает ошибка — возвращает её описание.
     """
     try:
-        # print(f"process_with_smarthomeAI({prompt})")
+        print(f"process_with_smarthomeAI({prompt})")
         smhome_agent = SmartHomeAgent()
         agent_response = smhome_agent.invoke(prompt)
         print(f"agent_response: {agent_response}")
@@ -161,7 +147,7 @@ def get_devices() -> dict:
 
 
 @tool
-def perform_device_func(path:str) -> int:
+def perform_device_func(path: str) -> int:
     """
     Вызов функции устройства умного дома
 
@@ -173,6 +159,7 @@ def perform_device_func(path:str) -> int:
     """
     print(f"Вызвана функция устройства умного дома {path}")
     return 0
+
 
 class SmartHomeAgent(LLMAgent):
     def __init__(self):
